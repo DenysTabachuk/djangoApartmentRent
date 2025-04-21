@@ -1,0 +1,34 @@
+form {
+  display: flex;
+  flex-direction: column;
+}
+
+.form-container {
+  max-height: fit-content;
+  width: 500px;
+  border-radius: 15px;
+  border: 1px solid black;
+  padding: 30px 30px 60px 30px;
+}
+
+.form-container h2 {
+  text-align: center;
+}
+
+label {
+  margin-top: 20px;
+}
+
+input,
+select,
+textarea {
+  padding: 8px;
+  margin-top: 5px;
+  border: 1px solid black !important;
+  width: 95% !important;
+  border-radius: 5px;
+}
+
+select {
+  width: 98% !important;
+}

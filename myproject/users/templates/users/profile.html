@@ -1,0 +1,38 @@
+{% extends "base.html" %} 
+{% load static %}
+
+{% block styles %}
+  <link rel="stylesheet" href="{% static 'users/css/authorization.css' %}?v=1.6" />
+  <link rel="stylesheet" href="{% static 'css/apartment_item.css' %}?v=1.6"/>
+{% endblock %}
+
+{% block content %}
+<div>
+  <h1>Профіль користувача</h1>
+
+  {% if user.is_admin %}
+  <p style="color: red; font-weight: bold">Адміністратор</p>
+  {% endif %}
+
+  <p>Вітаємо, {{ user.first_name }} {{user.last_name }}!</p>
+  <p>Ваш номер: {{ user.phone }}</p>
+  <p>Ваша електронна адреса: {{ user.email }}</p>
+
+  <br />
+  <h2>Ваші оголошення</h2>
+  {% if apartments %} {% for apartment in apartments %}
+   {% include "apartment_item.html" %} {% endfor %} {% else %}
+  <p>Поки пусто</p>
+  {% endif %}
+
+  <br />
+
+  <form action="/apartments/create" method="get">
+    <button>Додати нове оголошення</button>
+  </form>
+
+  <form action="/logout/" method="post">
+    <button>Вийти</button>
+  </form>
+</div>
+{% endblock %}

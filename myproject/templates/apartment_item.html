@@ -1,0 +1,27 @@
+{% load static %}
+
+<div class="apartment-item">
+  <img
+    src="{% static 'images/default-image.jpg' %}"
+    alt="Image"
+  />
+  <h2>{{ apartment.title}}</h2>
+  <p><strong>Ціна:</strong> {{ apartment.price}} грн/місяць</p>
+  <p>
+    <strong>Локація:</strong> {{ apartment.location.city }}, 
+    {{apartment.location.street }}, буд. {{ apartment.location.house_number }}
+  </p>
+
+  <!-- Перевірка статусу -->
+  {% if apartment.status == 'pending' %}
+  <p class="error-message">Очікує на підтвердження</p>
+  {% elif apartment.status == 'rejected' %}
+  <p class="error-message">Публікацію оголошення відхилено</p>
+  {% endif %}
+
+  <div>
+    <a href="/apartments/{{ apartment.id }}">
+      <button>Переглянути</button>
+    </a>
+  </div>
+</div>
