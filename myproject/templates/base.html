@@ -5,14 +5,32 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>{% block title %}{% endblock %}</title>
-    <link rel="stylesheet" href="{% static 'css/base.css' %}?v=1.6" />
+    <link rel="stylesheet" href="{% static 'css/base.css' %}?v=2.0" />
     {% block styles %} {% endblock %}
   </head>
   <body>
     <header>
       <nav>
-        <ul id="nav-links"></ul>
+        <ul>
+          <li><a href="/">Про нас</a></li>
+
+          <li><a href="/apartments/">Квартири</a></li>
+      
+          {% if user %}
+            <li><a href="/profile/">Профіль</a></li>
+      
+            {% if user.is_admin %}
+              <li><a href="/admin-panel/">Адмін-панель</a></li>
+            {% endif %}
+      
+            <li><a href="/logout/">Вийти</a></li>
+          {% else %}
+            <li><a href="/login/">Вхід</a></li>
+            <li><a href="/register/">Реєстрація</a></li>
+          {% endif %}
+        </ul>
       </nav>
+      
     </header>
 
     <!-- Content (тіло сторінки) -->
@@ -21,48 +39,5 @@
     <footer>
       <p><strong>&copy; 2025 RentalUA</strong></p>
     </footer>
-
-    <script>
-      function getCookie(name) {
-        const value = `; ${document.cookie}`;
-        const parts = value.split(`; ${name}=`);
-        if (parts.length === 2) return parts.pop().split(";").shift();
-      }
-
-      function updateNavigation() {
-        const token = getCookie("is_logged_in");
-        const navLinks = document.getElementById("nav-links");
-
-        console.log(getCookie());
-        {% comment %} if (token) {
-          navLinks.innerHTML = `
-            <li><a href="/">Home</a></li>
-            <li><a href="/profile">Profile</a></li>
-            {% if current_user.is_admin %}
-              <li><a href="/admin/">Admin panel</a></li>
-            {% endif %}
-          `;
-        } 
-        else {
-          navLinks.innerHTML = `
-            <li><a href="/">Home</a></li>
-            <li><a href="/register">Register</a></li>
-            <li><a href="/login">Login</a></li>
-          `;
-        } {% endcomment %}
-
-        navLinks.innerHTML = `
-        <li><a href="/">Home</a></li>
-        <li><a href="/register">Register</a></li>
-        <li><a href="/login">Login</a></li>
-        <li><a href="/profile">Profile</a></li>
-        <li><a href="/admin-panel/">Admin panel</a></li>
-      `;
-
-      }
-
-      // Оновлення навігації при завантаженні сторінки
-      updateNavigation();
-    </script>
   </body>
 </html>

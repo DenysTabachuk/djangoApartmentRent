@@ -60,3 +60,16 @@ button {
   cursor: pointer;
   border-radius: 15px;
 }
+
+.message.error{
+  color: red;
+  font-size: 1.2rem;
+  margin-top: 10px;
+}
+
+.message.success {
+  color: #155724;
+  font-size: 1.2rem;
+  margin-top: 10px;
+}
+

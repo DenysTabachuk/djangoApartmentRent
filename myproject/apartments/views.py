@@ -1,24 +1,14 @@
-from django.shortcuts import render, get_list_or_404
-from django.http import Http404
+import json
+from django.shortcuts import render, get_list_or_404, redirect
+from django.http import JsonResponse, Http404
+from django.views.decorators.csrf import csrf_exempt
+from django.contrib import messages
 
-# Фіксований список квартир для демонстрації
-APARTMENTS = [
-    {
-        "id": 1,
-        "title": "Квартира в центрі Києва",
-        "price": 15000,
-        "description": "Світла та простора квартира поруч з метро.",
-        "owner": {"first_name": "Олена", "last_name": "Іваненко", "phone": "+380501234567"},
-        "location": {"city": "Київ", "street": "Хрещатик", "house_number": 22},
-    },
-    {
-        "id": 2,
-        "title": "Затишна квартира на Подолі",
-        "price": 12000,
-        "description": "Ідеально підходить для молодої пари.",
-        "owner": {"first_name": "Андрій", "last_name": "Коваленко", "phone": "+380671112233"},
-        "location": {"city": "Київ", "street": "Контрактова площа", "house_number": 5},
-    },
+from data import APARTMENTS
+
+CITIES = [
+    "Київ", "Львів", "Одеса", "Харків", "Дніпро",
+    "Запоріжжя", "Кривий Ріг", "Миколаїв", "Черкаси"
 ]
 
 
@@ -29,10 +19,10 @@ def apartment_detail_view(request, apartment_id):
         raise Http404("Квартира не знайдена")
 
     # Власник взятий з даних квартири
-    owner = apartment['owner']
-
-    # Оскільки немає бази даних, is_owner завжди False
     is_owner = False
+    owner = apartment['owner']
+    if owner["email"] == request.session.get("user", {}).get("email"):
+        is_owner = True
 
     context = {
         'apartment': apartment,
@@ -41,9 +31,86 @@ def apartment_detail_view(request, apartment_id):
     }
     return render(request, 'apartments/apartment_detail.html', context)
 
-# Приклад підключення в urls.py
-# from django.urls import path
-# from .views import apartment_detail_view
-# urlpatterns = [
-#     path('<int:apartment_id>/', apartment_detail_view, name='apartment_detail'),
-# ]
+@csrf_exempt
+def apartment_create_view(request):
+    user = request.session.get('user')
+
+    if not user:
+        messages.error(request, "Ви не залогінені. Будь ласка, увійдіть в систему.")
+        return redirect('/login/')
+
+    if request.method == "GET":
+
+        context = {
+        'apartment': None,
+        'cities': CITIES,
+        }
+
+        return render(request, 'apartments/add_edit_apartment.html', context=context)
+
+    elif request.method == "POST":
+        try:
+            data = json.loads(request.body)
+            new_id = max([a['id'] for a in APARTMENTS]) + 1 if APARTMENTS else 1
+            new_apartment = {
+                "id": new_id,
+                "title": data.get("title"),
+                "description": data.get("description"),
+                "price": data.get("price"),
+                "owner": {
+                    "first_name":  user["first_name"],
+                    "last_name": user["last_name"],
+                    "phone": user.get("phone", ""),
+                },
+                "location": data.get("location")
+            }
+            APARTMENTS.append(new_apartment)
+
+            return JsonResponse({"status": "ok", "redirect_url": f"/apartments/{new_id}/"})
+        except Exception as e:
+            return JsonResponse({"error": str(e)}, status=400)
+
+    return Http404("Метод не підтримується")
+
+def apartments_view(request):
+    return render(request, 'apartments/apartments.html', {"apartments": APARTMENTS})
+
+def apartment_edit_view(request, apartment_id):
+    # Отримуємо квартиру за id
+    apartment = next((apt for apt in APARTMENTS if apt['id'] == apartment_id), None)
+
+    if not apartment:
+        raise Http404("Квартира не знайдена")
+
+    # Перевірка, чи є користувач власником цієї квартири
+    user = request.session.get("user")  # Отримуємо користувача з сесії
+    if not user or apartment['owner']['email'] != user.get('email'):
+        raise Http404("У вас немає доступу до редагування цієї квартири")
+
+    if request.method == 'POST':
+        # Обробка форми
+        title = request.POST.get("title")
+        description = request.POST.get("description")
+        price = request.POST.get("price")
+        city = request.POST.get("city")
+        street = request.POST.get("street")
+        house_number = request.POST.get("house_number")
+
+        # Оновлення даних квартири
+        apartment['title'] = title
+        apartment['description'] = description
+        apartment['price'] = price
+        apartment['location'] = {
+            'city': city,
+            'street': street,
+            'house_number': house_number
+        }
+
+        # Повідомлення про успішне оновлення
+        messages.success(request, "Квартиру успішно оновлено.")
+        return redirect(f"/apartments/{apartment_id}/")
+
+    # Якщо метод GET, повертаємо форму для редагування
+    return render(request, 'apartments/add_edit_apartment.html', {
+        'apartment': apartment,
+    })

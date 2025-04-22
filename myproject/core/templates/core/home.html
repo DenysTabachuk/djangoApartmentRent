@@ -1,22 +1,23 @@
-{% extends "base.html" %} 
-{% load static %}
-
-{% block styles %}
-<link rel="stylesheet" href="{% static 'core/css/home.css' %}">
-<link rel="stylesheet" href="{% static 'css/apartment_item.css' %}?v=1.6"/>
-{% endblock %}
+{% extends "base.html" %}
 
 {% block content %}
-<h1>Головна сторінка</h1>
-
-  <div id="apartment_container">
-    {% if apartments %} 
-      {% for apartment in apartments %} 
-        {% include "apartment_item.html" %} 
-      {% endfor %} 
-    {% else %}
-      <p><big><strong>На жаль, наразі немає доступних квартир.</strong></big></p>
-    {% endif %}
-  </div>
+<div class="homepage-container" style="text-align: center; padding: 4rem 1rem;">
+  <h1 style="font-size: 3rem; margin-bottom: 1rem;">Ласкаво просимо до <span style="color: #0077cc;">RentalUA</span>!</h1>
+  <br/>
+  <br/>
+  <p style="font-size: 1.2rem; max-width: 600px; margin: 0 auto 2rem;">
+    Знайдіть свою ідеальну квартиру для оренди в Україні — швидко, зручно та без посередників.
+  </p>
+  <a href="{% url 'apartments' %}" style="
+      display: inline-block;
+      background-color: #0077cc;
+      color: white;
+      padding: 0.75rem 1.5rem;
+      border-radius: 0.5rem;
+      font-size: 1rem;
+      text-decoration: none;
+    ">
+    Переглянути всі квартири
+  </a>
 </div>
 {% endblock %}

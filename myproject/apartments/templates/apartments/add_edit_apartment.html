@@ -1,0 +1,123 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block styles %}
+  <link rel="stylesheet" href="{% static 'apartments/css/add_edit_apartment.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="form-container">
+  <h2>
+    {% if apartment %}Редагувати оголошення{% else %}Додати нове оголошення{% endif %}
+  </h2>
+  <form id="apartment-form" method="post" action="/apartments/create" onsubmit="return false;">
+
+    <input type="hidden" name="apartment_id"
+      value="{% if apartment %}{{ apartment.id }}{% endif %}" />
+
+    <label for="title">Назва:</label>
+    <input
+      type="text"
+      id="title"
+      name="title"
+      value="{% if apartment %}{{ apartment.title }}{% endif %}"
+      minlength="5"
+      required
+    />
+
+    <label for="description">Опис:</label>
+    <textarea 
+      id="description" 
+      name="description" 
+      required
+      minlength="10"
+    >{% if apartment %}{{ apartment.description }}{% endif %}</textarea>
+
+    <label for="price">Ціна:</label>
+    <input
+      type="number"
+      id="price"
+      name="price"
+      step="0.01"
+      min="0"
+      value="{% if apartment %}{{ apartment.price }}{% endif %}"
+      required
+    />
+
+    <label for="city">Місто:</label>
+    <select id="city" name="city" required>
+      <option value="">Оберіть місто</option>
+      {% for city in cities %}
+        <option value="{{ city }}"
+          {% if apartment and apartment.location and apartment.location.city == city %}selected{% endif %}>
+          {{ city }}
+        </option>
+      {% endfor %}
+    </select>
+
+    <label for="street">Вулиця:</label>
+    <input
+      type="text"
+      id="street"
+      name="street"
+      value="{% if apartment and apartment.location %}{{ apartment.location.street }}{% endif %}"
+      minlength="3"
+      required
+    />
+
+    <label for="house_number">Номер будинку:</label>
+    <input
+      type="text"
+      id="house_number"
+      name="house_number"
+      value="{% if apartment and apartment.location %}{{ apartment.location.house_number }}{% endif %}"
+      required
+    />
+
+    <button type="submit">
+      {% if apartment %}Оновити{% else %}Додати{% endif %}
+    </button>
+  </form>
+</div>
+
+
+<script>
+  const form = document.getElementById('apartment-form');
+
+  form.onsubmit = async (event) => {
+    event.preventDefault();  
+
+    const formData = new FormData(form);
+    const data = {};
+    formData.forEach((value, key) => { data[key] = value; });
+
+    const method = data.apartment_id ? 'PUT' : 'POST';
+    const url = data.apartment_id
+      ? `/apartments/${data.apartment_id}/edit/`
+      : '/apartments/create/';
+
+    const response = await fetch(url, {
+      method: method,
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        title: data.title,
+        description: data.description,
+        price: parseFloat(data.price),
+        location: {
+          city: data.city,
+          street: data.street,
+          house_number: data.house_number
+        }
+      })
+    });
+
+    if (response.ok) {
+      const responseData = await response.json();
+      window.location.href = responseData.redirect_url;
+    } else {
+      console.error("Помилка:", await response.text());
+    }
+  };
+</script>
+
+{% endblock %}
