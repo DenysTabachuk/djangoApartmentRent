@@ -28,9 +28,7 @@
   <form action="/apartments/{{ apartment.id }}/edit/" method="get">
     <button>Редагувати</button>
   </form>
-  <form onSubmit="deleteApartment({{ apartment.id }})">
-    <button>Видалити</button>
-  </form>
+  <button onclick="deleteApartment({{ apartment.id }})">Видалити</button>
   {% else %}
   <form action="">
     <button>Забронювати</button>
@@ -38,28 +36,41 @@
   {% endif %}
 </div>
 
+
 <script>
-  function deleteApartment(apartmentId) {
-    if (confirm("Ви впевнені, що хочете видалити це оголошення?")) {
-      fetch(`/apartments/${apartmentId}`, {
-        method: "DELETE",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        credentials: "same-origin", // Для збереження кукі
-      })
-        .then((response) => {
-          if (response.ok) {
-            window.location.href = "/";
-          } else {
-            alert("Щось пішло не так при видаленні.");
+  function getCookie(name) {
+      let cookieValue = null;
+      if (document.cookie && document.cookie !== '') {
+          const cookies = document.cookie.split(';');
+          for (let cookie of cookies) {
+              cookie = cookie.trim();
+              if (cookie.startsWith(name + '=')) {
+                  cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                  break;
+              }
           }
-        })
-        .catch((error) => {
-          alert("Помилка: " + error);
-        });
-    }
+      }
+      return cookieValue;
   }
-</script>
+  
+  function deleteApartment(id) {
+    if (!confirm("Точно видалити квартиру?")) return;
+
+    fetch(`/apartments/${id}/delete/`, {
+        method: 'DELETE',
+        headers: {
+            'X-CSRFToken': getCookie('csrftoken'),
+            'Content-Type': 'application/json',
+        },
+        redirect: 'follow' // ця опція не допоможе автоматично перейти у fetch, треба вручну
+    })
+    .then(response => {
+        if (response.redirected) {
+            window.location.href = response.url; // перенаправляємо вручну
+        }
+    });
+}
+
+  </script>
 
 {% endblock %}

@@ -1,9 +1,9 @@
 import json
 from django.shortcuts import render, get_list_or_404, redirect
-from django.http import JsonResponse, Http404
+from django.http import HttpResponseRedirect, JsonResponse, Http404
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib import messages
-
+from django.core.exceptions import PermissionDenied
 from data import APARTMENTS
 
 CITIES = [
@@ -14,6 +14,9 @@ CITIES = [
 
 def apartment_detail_view(request, apartment_id):
     # Пошук квартири за id
+    user = request.session.get('user')
+    print("User from session:", user)
+
     apartment = next((item for item in APARTMENTS if item['id'] == apartment_id), None)
     if not apartment:
         raise Http404("Квартира не знайдена")
@@ -34,7 +37,7 @@ def apartment_detail_view(request, apartment_id):
 @csrf_exempt
 def apartment_create_view(request):
     user = request.session.get('user')
-
+    print("User from session:", user)
     if not user:
         messages.error(request, "Ви не залогінені. Будь ласка, увійдіть в систему.")
         return redirect('/login/')
@@ -60,7 +63,8 @@ def apartment_create_view(request):
                 "owner": {
                     "first_name":  user["first_name"],
                     "last_name": user["last_name"],
-                    "phone": user.get("phone", ""),
+                    "phone": user.get("phone"),
+                    "email": user["email"],
                 },
                 "location": data.get("location")
             }
@@ -72,45 +76,77 @@ def apartment_create_view(request):
 
     return Http404("Метод не підтримується")
 
-def apartments_view(request):
-    return render(request, 'apartments/apartments.html', {"apartments": APARTMENTS})
-
+@csrf_exempt
 def apartment_edit_view(request, apartment_id):
     # Отримуємо квартиру за id
     apartment = next((apt for apt in APARTMENTS if apt['id'] == apartment_id), None)
-
+    print(apartment)
     if not apartment:
         raise Http404("Квартира не знайдена")
 
     # Перевірка, чи є користувач власником цієї квартири
     user = request.session.get("user")  # Отримуємо користувача з сесії
     if not user or apartment['owner']['email'] != user.get('email'):
-        raise Http404("У вас немає доступу до редагування цієї квартири")
+        raise PermissionDenied("У вас немає доступу до редагування цієї квартири")
 
-    if request.method == 'POST':
-        # Обробка форми
-        title = request.POST.get("title")
-        description = request.POST.get("description")
-        price = request.POST.get("price")
-        city = request.POST.get("city")
-        street = request.POST.get("street")
-        house_number = request.POST.get("house_number")
 
-        # Оновлення даних квартири
-        apartment['title'] = title
-        apartment['description'] = description
-        apartment['price'] = price
-        apartment['location'] = {
-            'city': city,
-            'street': street,
-            'house_number': house_number
-        }
+    if request.method == 'PUT':
+        try:
+            data = json.loads(request.body)
+            title = data.get("title")
+            description = data.get("description")
+            price = data.get("price")
+            location = data.get("location", {})
+            city = location.get("city")
+            street = location.get("street")
+            house_number = location.get("house_number")
 
-        # Повідомлення про успішне оновлення
-        messages.success(request, "Квартиру успішно оновлено.")
-        return redirect(f"/apartments/{apartment_id}/")
+            apartment['title'] = title
+            apartment['description'] = description
+            apartment['price'] = price
+            apartment['location'] = {
+                'city': city,
+                'street': street,
+                'house_number': house_number
+            }
+
+            print("Apartment after update:", apartment)
+
+            return JsonResponse({"status": "ok", "redirect_url": f"/apartments/{apartment_id}/"})
+
+        except Exception as e:
+            return JsonResponse({"error": str(e)}, status=400)
+
 
     # Якщо метод GET, повертаємо форму для редагування
     return render(request, 'apartments/add_edit_apartment.html', {
         'apartment': apartment,
+        'cities': CITIES,
     })
+
+@csrf_exempt
+def apartment_delete_view(request, apartment_id):
+    if request.method != "DELETE":
+        raise Http404("Метод не підтримується")
+
+    # Знаходимо квартиру
+    apartment = next((apt for apt in APARTMENTS if apt['id'] == apartment_id), None)
+    if not apartment:
+        raise Http404("Квартира не знайдена")
+
+    # Перевірка власника
+    user = request.session.get("user")
+    if not user or apartment['owner'].get('email') != user.get('email'):
+        raise PermissionDenied("Ви не маєте прав на видалення цієї квартири")
+
+    # Видалення
+    APARTMENTS.remove(apartment)
+    print("Apartment deleted:", apartment)
+
+    response = HttpResponseRedirect("/profile/")
+    response.status_code = 303 # це змінює DELETE метод на GET
+    return response
+
+
+def apartments_view(request):
+    return render(request, 'apartments/apartments.html', {"apartments": APARTMENTS})

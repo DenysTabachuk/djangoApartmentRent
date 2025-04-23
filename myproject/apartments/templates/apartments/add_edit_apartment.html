@@ -11,7 +11,7 @@
     {% if apartment %}Редагувати оголошення{% else %}Додати нове оголошення{% endif %}
   </h2>
   <form id="apartment-form" method="post" action="/apartments/create" onsubmit="return false;">
-
+    {% csrf_token %}
     <input type="hidden" name="apartment_id"
       value="{% if apartment %}{{ apartment.id }}{% endif %}" />
 

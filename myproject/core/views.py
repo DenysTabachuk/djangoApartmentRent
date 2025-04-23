@@ -5,6 +5,8 @@ from django.core.exceptions import PermissionDenied
 def home(request):
     return render(request, 'core/home.html')
 
+
+# це не працює на 404, якщо DEBUG = True, а якщо зробити DEBUG = False, то там з статичними файлами треба розбиратися
 def custom_error_handler_view(request, exception):
     if isinstance(exception, Http404):
         title = "Сторінку не знайдено"

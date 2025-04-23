@@ -3,6 +3,7 @@ from data import USERS
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib import messages
 from data import APARTMENTS
+from django.core.exceptions import PermissionDenied
 
 @csrf_exempt
 def login_view(request):
@@ -106,8 +107,11 @@ def admin_panel_view(request):
     pending_apartments = pending_apartments
 
     # Перевірка на статус адміна
-    if not request.session.get("user") or not request.session.get("user").get("is_admin"):
+    if not request.session.get("user"):
         return redirect("/login/")  # Якщо користувач не адмін, перенаправляємо на сторінку входу
+    
+    if not request.session.get("user").get("is_admin"):
+        raise PermissionDenied("У вас немає доступу до редагування цієї квартири")
 
     context = {
         "stats": stats,
