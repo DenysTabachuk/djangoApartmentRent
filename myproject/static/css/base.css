@@ -38,6 +38,7 @@ header ul li a {
 
 header ul li a:hover {
   background-color: #111111;
+  border-radius: 15px;
 }
 
 /* main content */
