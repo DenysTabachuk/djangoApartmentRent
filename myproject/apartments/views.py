@@ -149,7 +149,7 @@ def apartment_delete_view(request, apartment_id):
 
 def apartments_view(request):
     apartments = get_apartments()
-    # Якщо користувач не адмін, показуємо тільки затверджені оголошення
+
     apartments = [apt for apt in apartments if apt.get("status") == "approved"]
     
     return render(request, 'apartments/apartments.html', {"apartments": apartments})

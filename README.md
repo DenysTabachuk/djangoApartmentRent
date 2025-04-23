@@ -16,7 +16,6 @@
 1. Клонуйте репозиторій:
 ```bash
 git clone https://github.com/DenysTabachuk/djangoApartmentRent.git
-cd myproject
 ```
 
 2. Створіть віртуальне середовище:
@@ -41,6 +40,7 @@ pip install -r requirements.txt
 
 5. Запустіть сервер розробки:
 ```bash
+cd myproject
 python manage.py runserver
 ```
 
