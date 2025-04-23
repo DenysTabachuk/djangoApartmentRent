@@ -3,12 +3,22 @@
 {% load static %}
 
 {% block styles %}
-  <link rel="stylesheet" href="{% static 'apartments/css/apartment_detail.css'%}?v=1.3"/>
+  <link rel="stylesheet" href="{% static 'apartments/css/apartment_detail.css'%}?v=1.4"/>
+  <link rel="stylesheet" href="{% static 'css/apartment_item.css'%}?v=2.1"/>
 {% endblock %}
 
 {% block content %}
 <div class="apartment-block">
   <h2>{{ apartment.title }}</h2>
+  {% if is_owner and apartment.status != "approved" %}
+    <p class="status status-{{ apartment.status }}">
+      {% if apartment.status == "pending" %}
+        Очікує модерації
+      {% elif apartment.status == "rejected" %}
+        Відхилено
+      {% endif %}
+    </p>
+  {% endif %}
   <img
     src="{% static 'images/default-image.jpg' %}"
     alt="Image"

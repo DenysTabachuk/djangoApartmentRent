@@ -2,7 +2,7 @@
 {% load static %}
 
 {% block styles %}
-  <link rel="stylesheet" href="{% static 'users/css/admin_panel.css' %}?v=1.0" />
+  <link rel="stylesheet" href="{% static 'users/css/admin_panel.css' %}?v=1.1" />
 {% endblock %}
 
 {% block content %}
@@ -60,7 +60,7 @@
             {% endif %}
           </td>
           <td>
-            <form action="/admin/users/{{ user.id }}/toggle-status" method="post" style="display: inline">
+            <form action="{% url 'toggle-user-status' user.id %}" method="post" style="display: inline">
               {% csrf_token %}
               <button type="submit" class="toggle-status-btn">
                 {% if user.is_active %}Заблокувати{% else %}Розблокувати{% endif %}
@@ -75,41 +75,85 @@
 
   <div class="apartments-section">
     <h2>Модерація оголошень</h2>
-    <table class="apartments-table">
-      <thead>
-        <tr>
-          <th>ID</th>
-          <th>Назва</th>
-          <th>Власник</th>
-          <th>Ціна</th>
-          <th>Статус</th>
-          <th>Дії</th>
-        </tr>
-      </thead>
-      <tbody>
-        {% for apartment in pending_apartments %}
-        <tr>
-          <td>{{ apartment.id }}</td>
-          <td>{{ apartment.title }}</td>
-          <td>{{ apartment.owner.first_name }} {{ apartment.owner.last_name }}</td>
-          <td>{{ apartment.price }} грн</td>
-          <td><span class="status-pending">Очікує модерації</span></td>
-          <td>
-            <form action="/admin/apartments/{{ apartment.id }}/moderate" method="post" style="display: inline">
-              {% csrf_token %}
-              <input type="hidden" name="status" value="approved" />
-              <button type="submit" class="approve-btn">Одобрити</button>
-            </form>
-            <form action="/admin/apartments/{{ apartment.id }}/moderate" method="post" style="display: inline">
-              {% csrf_token %}
-              <input type="hidden" name="status" value="rejected" />
-              <button type="submit" class="reject-btn">Відхилити</button>
-            </form>
-          </td>
-        </tr>
-        {% endfor %}
-      </tbody>
-    </table>
+    
+    <div class="pending-apartments">
+      <h3>Оголошення, що очікують модерації</h3>
+      <table class="apartments-table">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Назва</th>
+            <th>Власник</th>
+            <th>Ціна</th>
+            <th>Статус</th>
+            <th>Дії</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for apartment in pending_apartments %}
+          <tr>
+            <td>{{ apartment.id }}</td>
+            <td>{{ apartment.title }}</td>
+            <td>{{ apartment.owner.first_name }} {{ apartment.owner.last_name }}</td>
+            <td>{{ apartment.price }} грн</td>
+            <td><span class="status status-pending">Очікує модерації</span></td>
+            <td>
+              <form action="/status/{{ apartment.id }}" method="post" style="display: inline">
+                {% csrf_token %}
+                <input type="hidden" name="status" value="approved" />
+                <button type="submit" class="approve-btn">Одобрити</button>
+              </form>
+              <form action="/status/{{ apartment.id }}" method="post" style="display: inline">
+                {% csrf_token %}
+                <input type="hidden" name="status" value="rejected" />
+                <button type="submit" class="reject-btn">Відхилити</button>
+              </form>
+              <button class="view-btn">
+                <a href="/apartments/{{ apartment.id }}/">Переглянути</a>
+              </button>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+
+    <div class="rejected-apartments">
+      <h3>Відхилені оголошення</h3>
+      <table class="apartments-table">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Назва</th>
+            <th>Власник</th>
+            <th>Ціна</th>
+            <th>Статус</th>
+            <th>Дії</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for apartment in rejected_apartments %}
+          <tr>
+            <td>{{ apartment.id }}</td>
+            <td>{{ apartment.title }}</td>
+            <td>{{ apartment.owner.first_name }} {{ apartment.owner.last_name }}</td>
+            <td>{{ apartment.price }} грн</td>
+            <td><span class="status status-inactive">Відхилено</span></td>
+            <td>
+              <form action="/status/{{ apartment.id }}" method="post" style="display: inline">
+                {% csrf_token %}
+                <input type="hidden" name="status" value="approved" />
+                <button type="submit" class="approve-btn">Одобрити</button>
+              </form>
+              <button class="view-btn">
+                <a href="/apartments/{{ apartment.id }}/">Переглянути</a>
+              </button>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
   </div>
 </div>
 

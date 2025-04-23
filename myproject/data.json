@@ -1,0 +1,175 @@
+{
+    "users": [
+        {
+            "email": "admin@gmail.com",
+            "password": "admin123",
+            "first_name": "Admin",
+            "last_name": "Adminov",
+            "phone": "+380000000000",
+            "is_active": true,
+            "is_admin": true,
+            "id": 1
+        },
+        {
+            "email": "tabachuk.denys@lll.kpi.ua",
+            "password": "123456",
+            "first_name": "Denys",
+            "last_name": "Tabachuk",
+            "phone": "0994592831",
+            "is_active": true,
+            "is_admin": false,
+            "id": 2
+        },
+        {
+            "email": "tabachuk.denys@lll.kpi.ua222",
+            "password": "123456",
+            "first_name": "Denys",
+            "last_name": "Tabachuk",
+            "phone": "0994592831",
+            "is_active": true,
+            "is_admin": false,
+            "id": 3
+        },
+        {
+            "id": 4,
+            "email": "tabachuk.denys@lll.kpi.ua3",
+            "password": "123456",
+            "first_name": "Denys",
+            "last_name": "Tabachuk",
+            "phone": "0994592831",
+            "is_active": true,
+            "is_admin": false
+        }
+    ],
+    "apartments": [
+        {
+            "id": 1,
+            "title": "Квартира в центрі Києва",
+            "price": 16000,
+            "description": "Світла та простора квартира поруч з метро.",
+            "owner": {
+                "email": "admin@gmail.com",
+                "password": "admin123",
+                "first_name": "Admin",
+                "last_name": "Adminov",
+                "phone": "+380000000000",
+                "is_active": true,
+                "is_admin": true
+            },
+            "location": {
+                "city": "Київ",
+                "street": "Хрещатик",
+                "house_number": "22"
+            },
+            "status": "approved"
+        },
+        {
+            "id": 2,
+            "title": "Нова квартира нового юзера",
+            "description": "Нова квартира нового юзера",
+            "price": 1234,
+            "owner": {
+                "first_name": "Denys",
+                "last_name": "Tabachuk",
+                "phone": "0994592831",
+                "email": "tabachuk.denys@lll.kpi.ua"
+            },
+            "location": {
+                "city": "Миколаїв",
+                "street": "вулиця",
+                "house_number": "111"
+            },
+            "status": "approved"
+        },
+        {
+            "id": 3,
+            "title": "Тест Тест Тест",
+            "description": "Тест Тест ТестТест Тест Тест",
+            "price": 1111,
+            "owner": {
+                "first_name": "Denys",
+                "last_name": "Tabachuk",
+                "phone": "0994592831",
+                "email": "tabachuk.denys@lll.kpi.ua"
+            },
+            "location": {
+                "city": "Миколаїв",
+                "street": "111",
+                "house_number": "1111"
+            },
+            "status": "approved"
+        },
+        {
+            "id": 4,
+            "title": "ааааааааааааааа",
+            "description": "ааааааааааааааа",
+            "price": 111,
+            "owner": {
+                "first_name": "Denys",
+                "last_name": "Tabachuk",
+                "phone": "0994592831",
+                "email": "tabachuk.denys@lll.kpi.ua"
+            },
+            "location": {
+                "city": "Кривий Ріг",
+                "street": "аааааааааа",
+                "house_number": "ааааа"
+            },
+            "status": "rejected"
+        },
+        {
+            "id": 5,
+            "title": "fdfdfffdfdfffdfdff",
+            "description": "fdfdfffdfdfffdfdff",
+            "price": 1111,
+            "owner": {
+                "first_name": "Denys",
+                "last_name": "Tabachuk",
+                "phone": "0994592831",
+                "email": "tabachuk.denys@lll.kpi.ua"
+            },
+            "location": {
+                "city": "Львів",
+                "street": "ffff",
+                "house_number": "1111"
+            },
+            "status": "approved"
+        },
+        {
+            "id": 6,
+            "title": "адмінаадмінаадмінаадміна",
+            "description": "11111мсмсм",
+            "price": 1111,
+            "owner": {
+                "first_name": "Admin",
+                "last_name": "Adminov",
+                "phone": "+380000000000",
+                "email": "admin@gmail.com"
+            },
+            "location": {
+                "city": "Львів",
+                "street": "1111",
+                "house_number": "11111"
+            },
+            "status": "approved"
+        },
+        {
+            "id": 7,
+            "title": "НовеНове",
+            "description": "НовеНовеНовеНове",
+            "price": 111,
+            "owner": {
+                "first_name": "Denys",
+                "last_name": "Tabachuk",
+                "phone": "0994592831",
+                "email": "tabachuk.denys@lll.kpi.ua"
+            },
+            "location": {
+                "city": "Харків",
+                "street": "111",
+                "house_number": "1111"
+            },
+            "status": "pending"
+        }
+    ]
+}

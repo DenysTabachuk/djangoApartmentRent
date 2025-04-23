@@ -14,9 +14,9 @@
 
   <!-- Перевірка статусу -->
   {% if apartment.status == 'pending' %}
-  <p class="error-message">Очікує на підтвердження</p>
+  <p class="status-message status-pending">Очікує на підтвердження</p>
   {% elif apartment.status == 'rejected' %}
-  <p class="error-message">Публікацію оголошення відхилено</p>
+  <p class="status-message status-rejected">Публікацію оголошення відхилено</p>
   {% endif %}
 
   <div>

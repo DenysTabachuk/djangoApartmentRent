@@ -2,37 +2,46 @@
 {% load static %}
 
 {% block styles %}
-  <link rel="stylesheet" href="{% static 'users/css/authorization.css' %}?v=1.6" />
-  <link rel="stylesheet" href="{% static 'css/apartment_item.css' %}?v=1.6"/>
+  <link rel="stylesheet" href="{% static 'users/css/authorization.css' %}?v=1.7" />
+  <link rel="stylesheet" href="{% static 'css/apartment_item.css' %}?v=1.9"/>
 {% endblock %}
 
 {% block content %}
-<div>
-  <h1>Профіль користувача</h1>
+<div class="profile-container">
+  <div class="user-info">
+    <h1>Профіль користувача</h1>
 
-  {% if user.is_admin %}
-  <p style="color: red; font-weight: bold">Адміністратор</p>
-  {% endif %}
+    {% if user.is_admin %}
+    <p class="admin-badge">Адміністратор</p>
+    {% endif %}
 
-  <p>Вітаємо, {{ user.first_name }} {{user.last_name }}!</p>
-  <p>Ваш номер: {{ user.phone }}</p>
-  <p>Ваша електронна адреса: {{ user.email }}</p>
+    <p>Вітаємо, {{ user.first_name }} {{user.last_name }}!</p>
+    <p>Ваш номер: {{ user.phone }}</p>
+    <p>Ваша електронна адреса: {{ user.email }}</p>
 
-  <br />
-  <h2>Ваші оголошення</h2>
-  {% if apartments %} {% for apartment in apartments %}
-   {% include "apartment_item.html" %} {% endfor %} {% else %}
-  <p>Поки пусто</p>
-  {% endif %}
+    <div class="profile-actions">
+      <form action="/apartments/create" method="get">
+        <button class="add-apartment-btn">Додати нове оголошення</button>
+      </form>
 
-  <br />
+      <form action="/logout/" method="post">
+        {% csrf_token %}
+        <button class="logout-btn">Вийти</button>
+      </form>
+    </div>
+  </div>
 
-  <form action="/apartments/create" method="get">
-    <button>Додати нове оголошення</button>
-  </form>
-
-  <form action="/logout/" method="post">
-    <button>Вийти</button>
-  </form>
+  <div class="apartments-section">
+    <h2>Ваші оголошення</h2>
+    {% if apartments %}
+      <div id="apartment_container">
+        {% for apartment in apartments %}
+          {% include "apartment_item.html" %}
+        {% endfor %}
+      </div>
+    {% else %}
+      <p class="no-apartments">Поки пусто</p>
+    {% endif %}
+  </div>
 </div>
 {% endblock %}
