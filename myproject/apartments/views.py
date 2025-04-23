@@ -6,6 +6,7 @@ from django.contrib import messages
 from django.core.exceptions import PermissionDenied
 from data import APARTMENTS
 from storage import get_apartments, add_apartment, update_apartment, delete_apartment
+from django.urls import reverse
 
 CITIES = [
     "Київ", "Львів", "Одеса", "Харків", "Дніпро",
@@ -143,9 +144,7 @@ def apartment_delete_view(request, apartment_id):
     delete_apartment(apartment_id)
     print("Apartment deleted:", apartment)
 
-    response = HttpResponseRedirect("/profile/")
-    response.status_code = 303
-    return response
+    return redirect(reverse("profile"))
 
 
 def apartments_view(request):

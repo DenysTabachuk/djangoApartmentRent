@@ -1,43 +1,40 @@
 {% load static %}
 <!DOCTYPE html>
-<html lang="en">
+<html lang="uk">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>{% block title %}{% endblock %}</title>
-    <link rel="stylesheet" href="{% static 'css/base.css' %}?v=2.1" />
+    <title>{% block title %}Аренда квартир{% endblock %}</title>
+    <link rel="stylesheet" href="{% static 'css/base.css' %}?v=1.0" />
     {% block styles %} {% endblock %}
   </head>
   <body>
     <header>
       <nav>
-        <ul>
-          <li><a href="/">Про нас</a></li>
-
+        <ul class="nav-links">
+          <li><a href="/">Головна</a></li>
           <li><a href="/apartments/">Квартири</a></li>
-      
-          {% if user %}
-            <li><a href="/profile/">Профіль</a></li>
-      
-            {% if user.is_admin %}
-              <li><a href="/admin-panel/">Адмін-панель</a></li>
+          {% if request.session.user %}
+            {% if request.session.user.is_admin == True %}
+              <li><a href="{% url 'admin_panel' %}">Адмін панель</a></li>
             {% endif %}
-      
-            <li><a href="/logout/">Вийти</a></li>
+            <li><a href="{% url 'profile' %}">Профіль</a></li>
+            <li><a href="{% url 'logout' %}">Вийти</a></li>
           {% else %}
-            <li><a href="/login/">Вхід</a></li>
-            <li><a href="/register/">Реєстрація</a></li>
+            <li><a href="{% url 'login' %}">Вхід</a></li>
+            <li><a href="{% url 'register' %}">Реєстрація</a></li>
           {% endif %}
         </ul>
       </nav>
-      
     </header>
 
     <!-- Content (тіло сторінки) -->
     <main>{% block content %}{% endblock %}</main>
 
     <footer>
-      <p><strong>&copy; 2025 RentalUA</strong></p>
+      <p>&copy; 2024 Аренда квартир. Всі права захищені.</p>
     </footer>
+
+    {% block scripts %}{% endblock %}
   </body>
 </html>

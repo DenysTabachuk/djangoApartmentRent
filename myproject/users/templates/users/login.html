@@ -12,21 +12,23 @@
 
 {% block content %}
 <div class="form-container">
-  <h2>Вхід</h2>
-  <form action="/login/" method="post">
-    <label for="email">Email:</label>
-    <input type="email" id="email" name="email" value="{{ email }}" required />
+    <h2>Вхід</h2>
+    <form action="{% url 'login' %}" method="post">
+        {% csrf_token %}
+        <label for="email">Email:</label>
+        <input type="email" id="email" name="email" value="{{ email }}" required />
 
-    <label for="password">Пароль:</label>
-    <input type="password" id="password" name="password" required />
+        <label for="password">Пароль:</label>
+        <input type="password" id="password" name="password" required />
 
-    <button type="submit">Увійти</button>
-  </form>
+        <button type="submit">Увійти</button>
+    </form>
+    <p>Немає акаунту? <a href="{% url 'register' %}">Зареєструватися</a></p>
 
-  {% for message in messages %}
-    <div class="message {% if message.tags %}{{ message.tags }}{% endif %}" style="margin-top: 10px">
-      {{ message }}
-    </div>
-  {% endfor %}
+    {% for message in messages %}
+      <div class="message {% if message.tags %}{{ message.tags }}{% endif %}" style="margin-top: 10px">
+        {{ message }}
+      </div>
+    {% endfor %}
 </div>
 {% endblock %}

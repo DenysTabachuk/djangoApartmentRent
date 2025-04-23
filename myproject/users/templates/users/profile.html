@@ -3,7 +3,7 @@
 
 {% block styles %}
   <link rel="stylesheet" href="{% static 'users/css/authorization.css' %}?v=1.7" />
-  <link rel="stylesheet" href="{% static 'css/apartment_item.css' %}?v=1.9"/>
+  <link rel="stylesheet" href="{% static 'apartments/css/apartment_item.css' %}?v=1.9"/>
 {% endblock %}
 
 {% block content %}
@@ -20,11 +20,11 @@
     <p>Ваша електронна адреса: {{ user.email }}</p>
 
     <div class="profile-actions">
-      <form action="/apartments/create" method="get">
+      <form action="{% url 'apartment_create' %}" method="get">
         <button class="add-apartment-btn">Додати нове оголошення</button>
       </form>
 
-      <form action="/logout/" method="post">
+      <form action="{% url 'logout' %}" method="post">
         {% csrf_token %}
         <button class="logout-btn">Вийти</button>
       </form>
