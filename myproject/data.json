@@ -26,7 +26,7 @@
             "first_name": "Denys",
             "last_name": "Tabachuk",
             "phone": "0994592831",
-            "is_active": true,
+            "is_active": false,
             "is_admin": false,
             "id": 3
         },
@@ -37,7 +37,7 @@
             "first_name": "Denys",
             "last_name": "Tabachuk",
             "phone": "0994592831",
-            "is_active": false,
+            "is_active": true,
             "is_admin": false
         }
     ],
@@ -77,7 +77,7 @@
             "location": {
                 "city": "Миколаїв",
                 "street": "вулиця",
-                "house_number": "111"
+                "house_number": "11124"
             },
             "status": "approved"
         },
@@ -96,6 +96,24 @@
                 "city": "Дніпро",
                 "street": "Ну якась там",
                 "house_number": "3"
+            },
+            "status": "approved"
+        },
+        {
+            "id": 9,
+            "title": "Tест Tест Tест",
+            "description": "1111аTестTест",
+            "price": 1111,
+            "owner": {
+                "first_name": "Denys",
+                "last_name": "Tabachuk",
+                "phone": "0994592831",
+                "email": "tabachuk.denys@lll.kpi.ua"
+            },
+            "location": {
+                "city": "Київ",
+                "street": "Tест",
+                "house_number": "1111"
             },
             "status": "approved"
         }
