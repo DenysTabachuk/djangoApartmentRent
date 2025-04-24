@@ -1,12 +1,12 @@
 from django.shortcuts import render, redirect
-from django.contrib.auth import login, logout, authenticate
-from django.contrib import messages
+from django.contrib.auth import login, logout
 from django.urls import reverse
 from django.views.decorators.csrf import csrf_exempt
-from .models import User
 from .forms import UserRegistrationForm, LoginForm
-from storage import get_apartments
+from apartments.models import Apartment
+from django.contrib.auth.decorators import login_required
 
+@csrf_exempt
 def login_view(request):
     if request.method == "POST":
         form = LoginForm(request, data=request.POST)
@@ -14,6 +14,8 @@ def login_view(request):
             user = form.get_user()
             login(request, user)
             return redirect(reverse("profile"))
+        else:
+            print(form.errors)
     else:
         form = LoginForm()
 
@@ -31,12 +33,9 @@ def register_view(request):
 
     return render(request, 'users/register.html', {'form': form})
 
+@login_required(login_url='login') 
 def profile_view(request):
-    if not request.user.is_authenticated:
-        return redirect(reverse("login"))
-
-    apartments = get_apartments()
-    user_apartments = [apt for apt in apartments if apt['owner']['email'] == request.user.email]
+    user_apartments = Apartment.objects.filter(owner=request.user)
 
     return render(request, 'users/profile.html', {
         "user": request.user,

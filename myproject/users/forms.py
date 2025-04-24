@@ -3,6 +3,7 @@ from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.core.exceptions import ValidationError
 from django.utils.translation import gettext_lazy as _
 from .models import User
+from django.contrib.auth import authenticate
 
 class UserRegistrationForm(UserCreationForm):
     error_messages = {
@@ -52,6 +53,7 @@ class UserRegistrationForm(UserCreationForm):
         return phone
 
 
+
 class LoginForm(AuthenticationForm):
     username = forms.EmailField(
         label=_('Email'),
@@ -64,6 +66,35 @@ class LoginForm(AuthenticationForm):
     )
 
     error_messages = {
-        'invalid_login': _('Невірний пароль'),
+        'invalid_login': _('Невірний email або пароль.'),
         'inactive': _('Ваш акаунт заблоковано. Зверніться до адміністратора.'),
     }
+
+    def clean(self):
+        email = self.cleaned_data.get('username')
+        password = self.cleaned_data.get('password')
+
+
+        if email:
+            try:
+                user = User.objects.get(email=email)
+                if not user.is_active:
+                    raise ValidationError(
+                        self.error_messages['inactive'],
+                        code='inactive',
+                    )
+            except User.DoesNotExist:
+                pass
+
+        if email and password:
+            self.user_cache = authenticate(self.request, username=email, password=password)
+            if self.user_cache is None:
+                raise ValidationError(
+                    self.error_messages['invalid_login'],
+                    code='invalid_login',
+                )
+
+        return self.cleaned_data
+
+    def get_user(self):
+        return self.user_cache

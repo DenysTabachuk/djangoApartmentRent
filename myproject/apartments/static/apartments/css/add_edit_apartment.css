@@ -32,3 +32,11 @@ textarea {
 select {
   width: 98% !important;
 }
+
+.errorlist {
+  color: red;
+  margin-top: 5px;
+  margin-left: 0;
+  padding-left: 10px;
+
+}

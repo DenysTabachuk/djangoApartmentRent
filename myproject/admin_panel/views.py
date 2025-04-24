@@ -1,35 +1,36 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.views.decorators.csrf import csrf_exempt
+from django.contrib.auth import get_user_model
 from django.contrib import messages
 from django.core.exceptions import PermissionDenied
 from django.urls import reverse
-from storage import get_apartments, get_users, update_apartment, update_user
+from apartments.models import Apartment
+from django.db.models import Avg
+
+User = get_user_model()
 
 def admin_panel_view(request):
-    # Перевірка на статус адміна
-    if not request.session.get("user"):
+    if not request.user.is_authenticated:
         return redirect(reverse("login"))
-    
-    if not request.session["user"].get("is_admin"):
+    if not request.user.is_staff:
         raise PermissionDenied("У вас немає доступу до адмін панелі")
-    
-    users = get_users()
-    apartments = get_apartments()
-    
-    # Розділяємо оголошення на очікуючі та відхилені
-    pending_apartments = [apt for apt in apartments if apt["status"] == "pending"]
-    rejected_apartments = [apt for apt in apartments if apt["status"] == "rejected"]
-    
+
+    users = User.objects.all()
+    apartments = Apartment.objects.all()
+
+    pending_apartments = apartments.filter(status="pending")
+    rejected_apartments = apartments.filter(status="rejected")
+
     # Статистика
     stats = {
-        "total_users": len(users),
-        "active_users": len([u for u in users if u["is_active"]]),
-        "total_apartments": len(apartments),
-        "pending_apartments": len(pending_apartments),
-        "approved_apartments": len([apt for apt in apartments if apt["status"] == "approved"]),
-        "rejected_apartments": len(rejected_apartments),
-        "average_price": sum(apt["price"] for apt in apartments) / len(apartments) if apartments else 0,
-        "total_owners": len(set(apt["owner"]["email"] for apt in apartments))
+        "total_users": users.count(),
+        "active_users": users.filter(is_active=True).count(),
+        "total_apartments": apartments.count(),
+        "pending_apartments": pending_apartments.count(),
+        "approved_apartments": apartments.filter(status="approved").count(),
+        "rejected_apartments": rejected_apartments.count(),
+        "average_price": apartments.aggregate(Avg("price"))["price__avg"] or 0,
+        "total_owners": User.objects.filter(apartment__isnull=False).distinct().count()
     }
 
     return render(request, "admin_panel/admin_panel.html", {
@@ -39,64 +40,53 @@ def admin_panel_view(request):
         "stats": stats
     })
 
+
 def admin_users_view(request):
-    # Перевірка на статус адміна
-    if not request.session.get("user"):
+    if not request.user.is_authenticated:
         return redirect("/login/")
-    
-    if not request.session.get("user").get("is_admin"):
+    if not request.user.is_staff  :
         raise PermissionDenied("У вас немає доступу до управління користувачами")
 
-    users = get_users()
-    
+    users = User.objects.all()
     return render(request, "admin_panel/admin_users.html", {
         "users": users
     })
 
+
 @csrf_exempt
 def moderate_apartment_view(request, apartment_id):
-    # Перевірка на статус адміна
-    if not request.session.get("user"):
+    if not request.user.is_authenticated:
         return redirect(reverse("login"))
-    
-    if not request.session["user"].get("is_admin"):
+    if not request.user.is_staff:
         raise PermissionDenied("У вас немає доступу до модерації квартир")
 
-    apartments = get_apartments()
-    apartment = next((apt for apt in apartments if apt["id"] == apartment_id), None)
-    
-    if not apartment:
-        return redirect(reverse("admin_panel"))
-    
+    apartment = get_object_or_404(Apartment, id=apartment_id)
+
     if request.method == "POST":
         status = request.POST.get("status")
-        update_apartment(apartment_id, {"status": status})
+        if status in ['approved', 'rejected', 'pending']:
+            apartment.status = status
+            apartment.save()
         return redirect(reverse("admin_panel"))
-    
+
     return render(request, "admin_panel/moderate_apartment.html", {
         "apartment": apartment
     })
 
+
 @csrf_exempt
 def toggle_user_status_view(request, user_id):
-    # Перевірка на статус адміна
-    if not request.session.get("user"):
+    if not request.user.is_authenticated:
         return redirect(reverse("login"))
-    
-    if not request.session["user"].get("is_admin"):
+    if not request.user.is_staff:
         raise PermissionDenied("У вас немає доступу до управління користувачами")
 
-    # Перевірка, чи адмін не намагається заблокувати самого себе
-    if user_id == request.session["user"]["id"]:
+    if request.user.id == user_id:
         messages.error(request, "Ви не можете заблокувати самого себе")
         return redirect(reverse("admin_panel"))
 
-    users = get_users()
-    user = next((u for u in users if u["id"] == user_id), None)
-    
-    if not user:
-        return redirect(reverse("admin_panel"))
-    
-    user["is_active"] = not user["is_active"]
-    update_user(user_id, {"is_active": user["is_active"]})
+    user = get_object_or_404(User, id=user_id)
+    user.is_active = not user.is_active
+    user.save()
+
     return redirect(reverse("admin_panel"))
