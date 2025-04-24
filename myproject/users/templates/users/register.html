@@ -1,7 +1,8 @@
-{% extends "base.html" %}
+{% extends 'base.html' %}
 {% load static %}
 
 {% block title %}Реєстрація{% endblock %}
+
 {% block stylesheets %}
   <link rel="stylesheet" href="{% static 'users/css/authorization.css' %}?v=1.6" />
 {% endblock %}
@@ -13,81 +14,26 @@
 {% block content %}
 <div class="form-container">
     <h2>Реєстрація</h2>
-    <form action="{% url 'register' %}" method="post">
+    <form method="post" class="auth-form">
         {% csrf_token %}
-
-        <label for="first_name">Ім'я:</label>
-        <input
-          type="text"
-          id="first_name"
-          name="first_name"
-          value="{{ first_name }}"
-          minlength="3"
-          required
-        />
-
-        <label for="last_name">Прізвище:</label>
-        <input
-          type="text"
-          id="last_name"
-          name="last_name"
-          value="{{ last_name }}"
-          minlength="3"
-          required
-        />
-
-        <label for="email">Email:</label>
-        <input
-          type="email"
-          id="email"
-          name="email"
-          value="{{ email }}"
-          required
-        />
-
-        <label for="phone">Номер телефону (10 цифр):</label>
-        <input
-          type="tel"
-          id="phone"
-          name="phone"
-          pattern="\d{10}"
-          title="Будь ласка, введіть 10 цифр номера телефону"
-          length="10"
-          value="{{ phone }}"
-          required
-        />
-
-        <label for="password">Пароль:</label>
-        <input
-          type="password"
-          id="password"
-          name="password"
-          minlength="6"
-          required
-        />
-
-        <label for="confirm_password">Підтвердження пароля:</label>
-        <input
-          type="password"
-          id="confirm_password"
-          name="confirm_password"
-          minlength="6"
-          required
-        />
-
-        {% if error %}
-          <div class="error-message">{{ error }}</div>
-        {% endif %}
-
-        <button type="submit">Зареєструватися</button>
+        {% for field in form %}
+            <div class="form-group">
+                {{ field.label_tag }}
+                {{ field }}
+                {% if field.errors %}
+                <div class="errorlist">
+                    {{ field.errors }}
+                </div>
+                {% endif %}
+                {% if field.help_text %}
+                    <small class="help-text">{{ field.help_text }}</small>
+                {% endif %}
+            </div>
+        {% endfor %}
+        <button type="submit" class="btn btn-primary">Зареєструватися</button>
     </form>
-
-    <p>Вже є акаунт? <a href="{% url 'login' %}">Увійти</a></p>
-
-    {% for message in messages %}
-      <div class="message {% if message.tags %}{{ message.tags }}{% endif %}" style="margin-top: 10px">
-        {{ message }}
-      </div>
-    {% endfor %}
+    <p class="auth-link">
+        Вже маєте акаунт? <a href="{% url 'login' %}">Увійти</a>
+    </p>
 </div>
 {% endblock %}

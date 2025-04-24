@@ -1,7 +1,8 @@
-{% extends "base.html" %}
+{% extends 'base.html' %}
 {% load static %}
 
 {% block title %}Вхід{% endblock %}
+
 {% block stylesheets %}
   <link rel="stylesheet" href="{% static 'users/css/authorization.css' %}?v=1.6" />
 {% endblock %}
@@ -13,22 +14,30 @@
 {% block content %}
 <div class="form-container">
     <h2>Вхід</h2>
-    <form action="{% url 'login' %}" method="post">
+    <form method="post" class="auth-form">
         {% csrf_token %}
-        <label for="email">Email:</label>
-        <input type="email" id="email" name="email" value="{{ email }}" required />
-
-        <label for="password">Пароль:</label>
-        <input type="password" id="password" name="password" required />
-
-        <button type="submit">Увійти</button>
+        {% for field in form %}
+            <div class="form-group">
+                {{ field.label_tag }}
+                {{ field }}
+                {% if field.errors %}
+                    <div class="errorlist">
+                        {{ field.errors }}
+                    </div>
+                {% endif %}
+            </div>
+        {% endfor %}
+        {% if form.non_field_errors %}
+            <div class="errorlist">
+                {{ form.non_field_errors }}
+            </div>
+        {% endif %}
+        <button type="submit" class="btn btn-primary">Увійти</button>
     </form>
-    <p>Немає акаунту? <a href="{% url 'register' %}">Зареєструватися</a></p>
+    
+    <p class="auth-link">
+        Немає акаунту? <a href="{% url 'register' %}">Зареєструватися</a>
+    </p>
 
-    {% for message in messages %}
-      <div class="message {% if message.tags %}{{ message.tags }}{% endif %}" style="margin-top: 10px">
-        {{ message }}
-      </div>
-    {% endfor %}
 </div>
 {% endblock %}

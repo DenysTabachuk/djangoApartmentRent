@@ -14,8 +14,8 @@
         <ul class="nav-links">
           <li><a href="/">Головна</a></li>
           <li><a href="/apartments/">Квартири</a></li>
-          {% if request.session.user %}
-            {% if request.session.user.is_admin == True %}
+          {% if user.is_authenticated %}
+            {% if user.is_staff %}
               <li><a href="{% url 'admin_panel' %}">Адмін панель</a></li>
             {% endif %}
             <li><a href="{% url 'profile' %}">Профіль</a></li>
