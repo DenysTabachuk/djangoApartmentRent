@@ -3,7 +3,6 @@ import os
 
 # Шлях до файлу з даними
 DATA_FILE = 'data.json'
-USERS_FILE = 'users.json'
 
 def load_data():
     """Завантажує дані з JSON файлу"""
