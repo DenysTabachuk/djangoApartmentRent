@@ -43,18 +43,23 @@ pip install -r requirements.txt
 cd myproject
 ```
 
-6. Виконайте міграції:
+6. Розгорніть БД у докері:
+```bash
+docker-compose up -d
+```
+
+7. Виконайте міграції:
 ```bash
 python manage.py makemigrations
 python manage.py migrate
 ```
 
-7. Створіть суперкористувача для доступу до адміністративної панелі:
+8. Створіть суперкористувача для доступу до адміністративної панелі:
 ```bash
 python manage.py createsuperuser
-````
+```
 
-8. Запустіть сервер розробки:
+9. Запустіть сервер розробки:
 ```bash
 python manage.py runserver
 ```
