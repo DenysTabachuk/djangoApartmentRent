@@ -1,0 +1,23 @@
+.filter-container{
+  display: flex;
+  align-items: center;
+  justify-content: flex-start; 
+  width: 100%;
+}
+
+.filter-form {
+  display: block;
+  gap: 2rem;
+  margin-bottom: 1.5rem;
+}
+
+.filter-form select,
+.filter-form input,
+.filter-form button {
+  padding: 5px 10px;
+  font-size: 14px;
+}
+.filter-form button {
+  margin-left: 20px;
+  padding: 10px;
+}

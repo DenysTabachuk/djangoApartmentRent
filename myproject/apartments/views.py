@@ -73,5 +73,23 @@ def apartment_delete_view(request, apartment_id):
 
 
 def apartments_view(request):
+    city = request.GET.get('city')
+    sort = request.GET.get('sort')
+
     apartments = Apartment.objects.filter(status='approved')
-    return render(request, 'apartments/apartments.html', {"apartments": apartments})
+
+    if city:
+        apartments = apartments.filter(location__city=city)
+
+    if sort == 'price_asc':
+        apartments = apartments.order_by('price')
+    elif sort == 'price_desc':
+        apartments = apartments.order_by('-price')
+
+    context = {
+        "apartments": apartments,
+        "selected_city": city,
+        "selected_sort": sort,
+        "apartment_model": Apartment  # Для доступу до CITY_CHOICES
+    }
+    return render(request, 'apartments/apartments.html', context)

@@ -4,6 +4,7 @@
   row-gap: 60px;
   column-gap: 20px;
   align-items: start;
+  width: 100%;
 }
 
 .apartments-grid {

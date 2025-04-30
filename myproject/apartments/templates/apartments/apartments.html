@@ -2,12 +2,37 @@
 {% load static %}
 
 {% block styles %}
-<link rel="stylesheet" href="{% static 'apartments/css/home.css' %}">
+<link rel="stylesheet" href="{% static 'apartments/css/apartments.css' %}">
 <link rel="stylesheet" href="{% static 'apartments/css/apartment_item.css' %}?v=2.4"/>
 {% endblock %}
 
 {% block content %}
 <h1>Доступні до оренди квартири</h1>
+
+<div class="filter-container">
+  <form method="get" class="filter-form">
+
+      <label for="city">Місто:</label>
+      <select name="city" id="city">
+        <option value="">Усі</option>
+        {% for code, name in apartment_model.CITY_CHOICES %}
+          <option value="{{ code }}" {% if selected_city == code %}selected{% endif %}>{{ name }}</option>
+        {% endfor %}
+      </select>
+
+
+  
+      <label for="sort">Сортувати:</label>
+      <select name="sort" id="sort">
+        <option value="">Без сортування</option>
+        <option value="price_asc" {% if selected_sort == 'price_asc' %}selected{% endif %}>Ціна ↑</option>
+        <option value="price_desc" {% if selected_sort == 'price_desc' %}selected{% endif %}>Ціна ↓</option>
+      </select>
+
+
+    <button type="submit">Застосувати</button>
+  </form>
+</div>
 
   <div id="apartment_container">
     {% if apartments %} 
