@@ -45,9 +45,11 @@ def apartment_edit_create_view(request, apartment_id=None):
             apartment = form.save(commit=False)
             apartment.owner = user  
 
-            # Якщо це новий об'єкт і користувач адмін — одразу "approved"
-            if not apartment_id and (user.is_staff or user.is_superuser):
-                apartment.status = "approved"
+            if apartment_id and not user.is_staff:
+                apartment.status = "pending"
+            else:
+                if user.is_staff or user.is_superuser:
+                    apartment.status = "approved"
 
             apartment.save()
             return redirect(reverse("profile"))  
