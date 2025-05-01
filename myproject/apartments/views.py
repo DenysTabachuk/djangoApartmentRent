@@ -107,7 +107,8 @@ def apartment_edit_view(request, apartment_id):
                     'city': data.get("location", {}).get("city"),
                     'street': data.get("location", {}).get("street"),
                     'house_number': data.get("location", {}).get("house_number")
-                }
+                },
+                "status": "pending"  
             }
             
             if update_apartment(apartment_id, updated_data):
